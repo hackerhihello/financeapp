@@ -1,0 +1,8 @@
+{
+    "functions": "functions",
+    "routes": [
+      { "src": "/api/auth/.*", "dest": "/functions/api/auth.js" },
+      { "src": "/api/bank/.*", "dest": "/functions/api/bank.js" },
+      { "src": "/.*", "dest": "/functions/api/default.js" }
+    ]
+  }
