@@ -20,9 +20,9 @@ mongoose.connect('mongodb://localhost:27017/financeApp', { useNewUrlParser: true
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error(err));
 
- // Export routes as functions
-const authRoutes = require('./functions/api/auth');
-const bankRoutes = require('./functions/api/bank');
+  app.get('/',  async (req, res) => { 
+  res.json("hello world");
+  })
 
 // Routes
 app.use('/api/auth', authRoutes);

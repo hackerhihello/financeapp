@@ -37,4 +37,5 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.runtime = "nodejs16.x";
 module.exports = router;
