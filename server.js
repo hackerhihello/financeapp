@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 require('dotenv').config();
 
 
-uri=process.env.MONGODB_URI;
+uri=process.env.MONGODB_URI || 'mongodb://localhost:27017/your-database';
 console.log('Connecting to MongoDB at:', uri);
 // Connect to MongoDB
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true ,  socketTimeoutMS: 30000})
