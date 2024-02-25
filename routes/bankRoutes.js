@@ -5,7 +5,7 @@ const User = require('../models/User');
 const Transaction = require('../models/Transaction');
 const router = express.Router();
 
-//getting the users
+//getting the user
 router.get('/', requireAuth, async (req, res) => {
   const userId = req.user.userId;
     try {
@@ -19,6 +19,45 @@ router.get('/', requireAuth, async (req, res) => {
       res.status(500).json({ error: error.message });
     }
  } )
+
+  //get all users 
+  router.get('/users', requireAuth, async (req, res) => {
+    const userId = req.user.userId;
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      const users = await User.find({}, 'username phonenumber'); // Retrieve only the 'username' field
+      res.json({ users });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+ 
+  // Define the route to get user details by phone number
+router.get('/username', requireAuth, async (req, res) => {
+  try {
+    // Extract the phone number from the query parameter
+    const { phonenumber } = req.query;
+
+    // Query the database to find the user by phone number
+    const user = await User.findOne({ phonenumber });
+
+    // Check if the user was found
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Respond with the user details
+    res.json({ user });
+  } catch (error) {
+    // Handle errors
+    console.error('Error fetching user details:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
  //gettting balance
 router.get('/balance', requireAuth, async (req, res) => {
@@ -35,11 +74,11 @@ router.get('/balance', requireAuth, async (req, res) => {
     }
   });
   
-
+//transpering the amount 
   router.post('/transfer', requireAuth, async (req, res) => {
     const userId = req.user.userId;
-    const { recipientPhoneNumber, amount } = req.body;
-  console.log(recipientPhoneNumber,amount);
+    const { recipientUsername, recipientPhoneNumber, amount, paymentMethod } = req.body; // Include paymentMethod in the destructuring
+  
     try {
       // Retrieve sender's account
       const sender = await User.findById(userId);
@@ -56,7 +95,6 @@ router.get('/balance', requireAuth, async (req, res) => {
   
       // Retrieve recipient's account based on phone number
       const recipient = await User.findOne({ phonenumber: recipientPhoneNumber });
-      console.log("recipient",recipient);
       if (!recipient) {
         return res.status(404).json({ message: 'Recipient not found' });
       }
@@ -64,12 +102,14 @@ router.get('/balance', requireAuth, async (req, res) => {
       // Add transferred amount to recipient's balance
       recipient.balance = Number(recipient.balance) + Number(amount);
       await recipient.save();
-
+  
       // Log transaction
       const transaction = new Transaction({
         sender: userId,
         phonenumber: recipientPhoneNumber, // Use recipient's phone number
-        amount
+        amount,
+        paymentMethod,
+        recipientUsername,
       });
       await transaction.save();
   
@@ -78,6 +118,7 @@ router.get('/balance', requireAuth, async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   });
+  
 
   
 // Get user's transactions

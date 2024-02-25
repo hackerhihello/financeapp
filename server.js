@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
 const bankRoutes = require('./routes/bankRoutes');
 const cors = require('cors');
-
+const User = require('./models/User');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 require('dotenv').config();
 
 
-uri=process.env.MONGODB_URI || 'mongodb://localhost:27017/your-database';
+uri='mongodb://localhost:27017/financeApp';
 console.log('Connecting to MongoDB at:', uri);
 // Connect to MongoDB
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true ,  socketTimeoutMS: 30000})
@@ -27,6 +27,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true ,  socke
   app.get('/',  async (req, res) => { 
   res.send("hello world");
   })
+
 
 // Routes
 app.use('/api/auth', authRoutes);

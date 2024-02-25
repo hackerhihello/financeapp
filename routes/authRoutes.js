@@ -37,5 +37,43 @@ router.post('/login', async (req, res) => {
   }
 });
 
+const invalidTokens = [];
+
+// Logout handling
+router.post('/logout', (req, res) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token is missing.' });
+  }
+
+  // Add the token to the invalid tokens list
+  invalidTokens.push(token);
+
+  res.json({ message: 'Logout successful' });
+});
+
+// Middleware to check if a token is valid
+const isTokenValid = (req, res, next) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token is missing.' });
+  }
+
+  if (invalidTokens.includes(token)) {
+    return res.status(401).json({ message: 'Token is no longer valid. Please log in again.' });
+  }
+
+  // If token is not in the invalid list, continue to the next middleware
+  next();
+};
+
+// Example protected route that checks for a valid token
+router.get('/protected-route', isTokenValid, (req, res) => {
+  res.json({ message: 'You have access to this protected route.' });
+});
+
+
 router.runtime = "nodejs16.x";
 module.exports = router;

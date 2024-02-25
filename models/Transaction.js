@@ -17,6 +17,14 @@ const transactionSchema = new mongoose.Schema({
   timestamp: {
     type: Date,
     default: Date.now
+  },
+  paymentMethod: {
+    type: String,
+    required: true
+  },
+  recipientUsername: {
+    type: String,
+    required: true
   }
 });
 
