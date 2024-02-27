@@ -36,7 +36,7 @@ router.get('/', requireAuth, async (req, res) => {
   });
  
   // Define the route to get user details by phone number
-router.get('/username', requireAuth, async (req, res) => {
+router.get('/username', async (req, res) => {
   try {
     // Extract the phone number from the query parameter
     const { phonenumber } = req.query;
