@@ -73,6 +73,36 @@ router.get('/balance', requireAuth, async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   });
+
+  
+// Update balance
+router.post('/updatebalance', requireAuth, async (req, res) => {
+  const userId = req.user.userId;
+  const { newBalance } = req.body;
+
+  try {
+    console.log('Received request to update balance. UserId:', userId, 'New Balance:', newBalance);
+
+    const user = await User.findById(userId);
+    if (!user) {
+      console.log('User not found');
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update user's balance
+     user.balance += parseFloat(newBalance); 
+
+     await user.save();
+
+    console.log('Balance updated successfully');
+    res.json({ message: 'Balance updated successfully' });
+  } catch (error) {
+    console.error('Error updating balance:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
   
 //transpering the amount 
   router.post('/transfer', requireAuth, async (req, res) => {
